@@ -1,0 +1,59 @@
+version: "3"
+services: 
+    back-end:
+        container_name: back-end
+        restart: always
+        build: 
+            context: ./backend
+            dockerfile: ./Dockerfile             
+        ports:
+            - "7777:7777"   
+        links:
+            - mongo                          
+        networks:
+            default:
+              aliases:
+                - front-end
+        volumes:
+            - ./backend/public/fileStore:/api/public/fileStore                  
+    mongo:
+        container_name: mongo
+        restart: always
+        environment:
+            MONGO_INITDB_DATABASE: Backup
+        ports:
+            - "27017:27017"              
+        image: mongo
+        volumes:
+            - ./mongo-volume:/data/db
+    n8n:
+        image: n8nio/n8n
+        container_name: n8n
+        restart: always
+        ports:
+        - 5678:5678
+        links:
+            - back-end
+        networks:
+            default:
+              aliases:
+                - back-end 
+        volumes:
+            - ./n8n:/home/node/.n8n        
+    front-end:
+        container_name: front-end
+        restart: always
+        build:
+            context: ./frontend
+            dockerfile: ./Dockerfile
+        ports: 
+            - "8080:80"
+        links:
+            - back-end
+        networks:
+            default:
+              aliases:
+                - back-end                                              
+volumes:
+    api:
+    components:
