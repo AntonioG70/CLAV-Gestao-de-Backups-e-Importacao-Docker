@@ -25,6 +25,15 @@ db.once('open', function () {
 
 var app = express();
 
+app.use(function(req, res, next){
+  res.setTimeout(3600000, function(){
+      console.log('Request has timed out.');
+      res.send(408);
+      });
+
+  next();
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
