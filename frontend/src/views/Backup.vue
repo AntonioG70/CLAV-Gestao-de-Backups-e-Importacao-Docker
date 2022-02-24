@@ -232,9 +232,15 @@ export default {
           }
           })
           .then(dados => {
-            this.loading = false
-            this.bagName = dados.data
-            this.dialogConfirm = true
+            if(dados.data == 'Request failed with status code 401'){
+              this.dialogErr2 = true
+              this.loading = false
+            }
+            else {
+              this.loading = false
+              this.bagName = dados.data
+              this.dialogConfirm = true
+            }
           })
           .catch(e => {
             console.log(e)
@@ -252,9 +258,15 @@ export default {
           }
           })
           .then(dados => {
-            this.loading = false
-            this.bagName = dados.data
-            this.dialogConfirm = true
+            if(dados.data == 'Request failed with status code 401'){
+              this.dialogErr2 = true
+              this.loading = false
+            }
+            else {
+              this.loading = false
+              this.bagName = dados.data
+              this.dialogConfirm = true
+            }            
           })
           .catch(e => {
             console.log(e)
