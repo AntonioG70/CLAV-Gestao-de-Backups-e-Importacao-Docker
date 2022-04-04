@@ -5,9 +5,7 @@ services:
         restart: always
         build: 
             context: ./backend
-            dockerfile: ./Dockerfile             
-        ports:
-            - "7777:7777"   
+            dockerfile: ./Dockerfile              
         links:
             - mongo                          
         networks:
@@ -20,9 +18,7 @@ services:
         container_name: mongo
         restart: always
         environment:
-            MONGO_INITDB_DATABASE: Backup
-        ports:
-            - "27017:27017"              
+            MONGO_INITDB_DATABASE: Backup        
         image: mongo
         volumes:
             - ./mongo-volume:/data/db
