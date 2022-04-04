@@ -288,7 +288,7 @@ export default {
     render(){
       axios({
       method: 'post',
-      url: "http://localhost:8080/api/bagit", 
+      url: "api/bagit", 
       data: {
         username: this.email,
         password: this.password,
@@ -314,7 +314,7 @@ export default {
       })  
     },
     download(){
-      axios.get('http://localhost:8080/api/bagit/download/' + this.bagName,
+      axios.get('api/bagit/download/' + this.bagName,
       {
         responseType: 'blob'
       })
@@ -333,11 +333,11 @@ export default {
     },
     eliminar(){
       this.dialogDelete = true
-      axios.delete('http://localhost:8080/api/bagit/' + this.bagName, {data:{username: this.email, password:this.password}})
+      axios.delete('api/bagit/' + this.bagName, {data:{username: this.email, password:this.password}})
         .then(() =>{
           axios({
           method: 'post',
-          url: "http://localhost:8080/api/bagit", 
+          url: "api/bagit", 
           data: {
             username: this.email,
             password: this.password,

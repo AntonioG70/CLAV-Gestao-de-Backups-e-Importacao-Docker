@@ -153,7 +153,7 @@ export default {
     } 
   },
   created() {
-    axios.get('http://localhost:8080/api/lista/')
+    axios.get('/api/lista/')
       .then(dados => {
         this.lista = dados.data
         this.listaBackup = []
@@ -163,7 +163,7 @@ export default {
   methods: {
     getListaApiKey(){
       this.lista = []
-      axios.get('http://localhost:8080/api/lista/apikey')  
+      axios.get('/api/lista/apikey')  
         .then(dados => {
           this.listaBackup.forEach(e => {
             if(dados.data.includes(e)){
@@ -179,7 +179,7 @@ export default {
     },
     getLista(){
       this.lista = []
-      axios.get('http://localhost:8080/api/lista/')
+      axios.get('/api/lista/')
         .then(dados => {
           this.listaBackup.forEach(e => {
             if(dados.data.includes(e)){
@@ -191,7 +191,7 @@ export default {
         .catch(err => console.log(err))        
     },
     download(){
-      axios.get('http://localhost:8080/api/bagit/download/' + this.bagName,
+      axios.get('/api/bagit/download/' + this.bagName,
       {
         responseType: 'blob'
       })
@@ -224,7 +224,7 @@ export default {
         if(this.tipoAut == 'login'){
           axios({
           method: 'post',
-          url: "http://localhost:8080/api/backup", 
+          url: "/api/backup", 
           data: {
             username: this.login.username,
             password: this.login.password,
@@ -251,7 +251,7 @@ export default {
         else if(this.tipoAut == 'apikey'){
           axios({
           method: 'post',
-          url: "http://localhost:8080/api/backup", 
+          url: "/api/backup", 
           data: {
             apikey: this.apikey,
             col: listaSub,
