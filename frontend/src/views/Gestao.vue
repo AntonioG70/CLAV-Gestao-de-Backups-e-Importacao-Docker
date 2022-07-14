@@ -1,75 +1,20 @@
 <template>
   <div>
-    <v-dialog persistent
-      v-model="dialog"
-      :retain-focus="false"
-      max-width="550">
-        <v-card>
-          <v-card-title class="text-h5 grey lighten-2 justify-center">Autenticação CLAV</v-card-title> <br/>
-          <v-card-text>
-            <v-container pa-0>
-              <v-col cols="12">
-                <v-text-field 
-                color=#2d364e
-                type="text" 
-                v-model="email" 
-                label="Email">
-                </v-text-field>
-              </v-col>
-                                  
-              <v-col cols="12">
-                <v-text-field  
-                  color=#2d364e
-                  :append-icon="valueLogin ? 'mdi-eye' : 'mdi-eye-off'" 
-                  :type="valueLogin ? 'password' : 'text'" 
-                  v-model="password" 
-                  label="Password"
-                  @click:append="() => (valueLogin = !valueLogin)">
-                </v-text-field>
-              </v-col>
-            </v-container>
-        </v-card-text>
-
-          <v-card-actions class="justify-center">
-            <v-btn 
-              v-ripple="{ class: 'primary--text' }" 
-              width="150"
-              style="height:40px; background-color: #2d364e; color: white" 
-              elevation="1"
-              :loading= loading 
-              @click="loading=true; render()" 
-              >Iniciar Sessão</v-btn>            
-            <v-btn 
-              v-ripple="{ class: 'primary--text' }" 
-              width="150"
-              style="height:40px; background-color: #9e9595; color: white" 
-              elevation="1"
-              @click="redirect" 
-              >Cancelar</v-btn>
-          </v-card-actions>
-        </v-card>
-    </v-dialog>
     <v-dialog
-      v-model="dialogErrAut"
+      v-model="dialogLoad"
       :retain-focus="false"
       max-width="550">
       <v-card>
-        <v-card-title class="text-h5 grey lighten-2">Erro</v-card-title> <br/>
+        <v-card-title class="text-h5 grey lighten-2">Aviso</v-card-title> <br/>
         <v-col style="margin: auto; padding: 0px 50px;">
           <p style="margin-bottom: 5px; color:#2d364e">
-            Erro na autenticação! Verifique as suas credenciais.</p>
+            A carregar bagits...</p>
         </v-col>           
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-          style="color: #2d364e !important"
-          text
-          @click="dialogErrAut = false">
-          Voltar
-          </v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog>    
     <v-dialog
       v-model="dialogErr"
       :retain-focus="false"
@@ -168,7 +113,7 @@
         <div class="child" v-for="elem in bagits" :key="elem.nome">
           <v-card
             class="mx-auto my-12"
-            style="height: 380px "
+            style="max-width: 400px;"
           >
 
             <v-card-title>{{elem.nome}}</v-card-title>
@@ -183,7 +128,7 @@
               <div class="my-4 text-subtitle-1">
                 Tamanho: {{elem.tamanho}}
               </div>
-              <div class="my-4 text-subtitle-1">
+              <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" class="my-4 text-subtitle-1">
                 Ficheiros: {{elem.ficheiros}}
               </div>
 
@@ -265,6 +210,7 @@ export default {
       dialogErr: false,
       dialogDelete: false,
       dialog: true,
+      dialogLoad: false,
       email: "",
       password: "",
       valueLogin: String,
@@ -281,29 +227,27 @@ export default {
       ]      
     }
   },
-  methods: {
-    redirect(){
-      this.$router.push('/')
-    },
-    render(){
-      axios({
+  created(){
+    this.dialogLoad = true
+    axios({
       method: 'post',
-      url: "api/bagit", 
+      url: "/api/bagit", 
       data: {
-        username: this.email,
-        password: this.password,
+        username: $cookies.get('user'),
+        password: $cookies.get('password'),
       }
-      })
+    })
       .then(dados => {
-        this.bagits = dados.data.map(b => {
+        this.bagits = dados.data.bagit.map(b => {
           return {
             nome: b.nome,
             criador: b.criador,
-            data_criacao: new Date(b.data_criacao).toISOString().replace("T", " ").replace(/\..*/, ""),
+            data_criacao: b.data_criacao,
             tamanho: b.tamanho,
             ficheiros: b.ficheiros.toString().replace('"', '').replace("[", "").replace("]", "")
           }
-        })        
+        })
+        this.dialogLoad = false        
         this.loading = false
         this.dialog = false
       })
@@ -312,9 +256,13 @@ export default {
         this.dialogErrAut = true
         this.loading = false
       })  
+  },
+  methods: {
+    redirect(){
+      this.$router.push('/')
     },
     download(){
-      axios.get('api/bagit/download/' + this.bagName,
+      axios.get('/api/bagit/download/' + this.bagName,
       {
         responseType: 'blob'
       })
@@ -333,24 +281,24 @@ export default {
     },
     eliminar(){
       this.dialogDelete = true
-      axios.delete('api/bagit/' + this.bagName, {data:{username: this.email, password:this.password}})
+      axios.delete('/api/bagit/' + this.bagName, {data:{username: $cookies.get('user'), password:$cookies.get('password')}})
         .then(() =>{
           axios({
           method: 'post',
-          url: "api/bagit", 
+          url: "/api/bagit", 
           data: {
-            username: this.email,
-            password: this.password,
+            username: $cookies.get('user'),
+            password: $cookies.get('password'),
           }
           })
           .then(dados => {
             this.dialogDelete = false
             this.dialogDelDone = true
-            this.bagits = dados.data.map(b => {
+            this.bagits = dados.data.bagit.map(b => {
               return {
                 nome: b.nome,
                 criador: b.criador,
-                data_criacao: new Date(b.data_criacao).toISOString().replace("T", " ").replace(/\..*/, ""),
+                data_criacao: b.data_criacao,
                 tamanho: b.tamanho,
                 ficheiros: b.ficheiros.toString().replace('"', '').replace("[", "").replace("]", "")
               }
@@ -367,7 +315,6 @@ export default {
         })
     }   
   }
-
 }
 </script>
 
@@ -390,6 +337,6 @@ export default {
   margin-top: 50px;
 }
 .child {
-  flex: 0 0 21%;
+  flex: 0 0 21%; /* explanation below */
 }
 </style>

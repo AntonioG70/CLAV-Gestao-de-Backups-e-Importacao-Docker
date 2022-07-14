@@ -10,6 +10,7 @@ Vue.config.productionTip = false
 
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
+Vue.use(require('vue-cookies'))
 
 new Vue({
   router,

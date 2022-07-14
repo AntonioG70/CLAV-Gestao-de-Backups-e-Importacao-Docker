@@ -16,8 +16,11 @@
     "fast-folder-size": "^1.5.0",
     "get-folder-size": "^3.1.0",
     "http-errors": "~1.6.3",
+    "jsonschema": "^1.4.0",
     "mongoose": "^6.1.4",
     "morgan": "~1.9.1",
+    "multer": "^1.4.5-lts.1",
+    "mv": "^2.1.1",
     "node-downloader-helper": "^1.0.19",
     "pug": "2.0.0-beta11",
     "zip-a-folder": "^1.1.0"

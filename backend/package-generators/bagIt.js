@@ -6,7 +6,7 @@ var pretty = require('prettier-bytes')
 
 async function buildBag (path, dir) {
   dir = dir || "/";
-  let info = {'Contact-Name': 'CLAV', 'Organization-Address': 'Universidade do Minho'}
+  let info = {'Contact-Name': 'António Lindo', 'Organization-Address': 'Universidade do Minho'}
 
   fs.mkdirSync(path)
   fs.mkdirSync(path + '/data')

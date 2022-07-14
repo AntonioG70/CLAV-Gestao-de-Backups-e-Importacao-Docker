@@ -76,3 +76,14 @@ const writeSize = function(directoryPath, location) {
 }
 
 module.exports.writeSize = writeSize
+
+function IsJsonString(str) {
+  try {
+      JSON.parse(str);
+  } catch (e) {
+      return false;
+  }
+  return true;
+}
+
+module.exports.IsJsonString = IsJsonString

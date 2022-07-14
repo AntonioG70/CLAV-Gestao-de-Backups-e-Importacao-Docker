@@ -28,11 +28,22 @@
           <v-toolbar-title class='bar-title'>CLAV: Plataforma de Gestão de Backups e de Importação de dados</v-toolbar-title>
         </div>
 
+
+
       <v-spacer></v-spacer>
+
+      <div v-if="$cookies.isKey('token') || $cookies.isKey('apikey')" class="logout" style="cursor: pointer;" @click="logout()">
+          <strong >Logout</strong>
+      </div>
+
+      <div v-if="!$cookies.isKey('token') && !$cookies.isKey('apikey')" class="logout" style="cursor: pointer;" @click="redirect()">
+        <strong>Login</strong>
+      </div>
 
       <div class="dropdown" style="color: white">
           <DropOps/>
-      </div>
+      </div>   
+
     </v-app-bar>
 </template>
 
@@ -41,10 +52,30 @@ import DropOps from '@/components/DropOps.vue';
 export default {
   components: {
     DropOps
+  },
+  methods: {
+    logout(){
+      if($cookies.isKey("token")){
+        this.$cookies.remove("token")
+        this.$cookies.remove("user")
+        this.$cookies.remove("password")        
+      }
+      else if($cookies.isKey("apikey")){
+        this.$cookies.remove("apikey")
+      }
+      console.log($cookies.keys())
+      this.$router.push('/autenticacao')
+    },
+    redirect(){
+      this.$router.push('/autenticacao')
+    }
   }
 }
 </script>
 
 <style>
+.logout{
+  margin-right: 1%;
+}
 
 </style>

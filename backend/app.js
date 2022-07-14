@@ -7,12 +7,13 @@ var logger = require('morgan');
 var backupRouter = require('./routes/backup');
 var listaRouter = require('./routes/lista');
 var bagitRouter = require('./routes/bagIt');
+var importRouter = require('./routes/import');
 
 var mongoose = require('mongoose');
 
 //Set up default mongoose connection
 var mongoDB = 'mongodb://mongo:27017/Backup';
-mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true, serverSelectionTimeoutMS: 5000 });
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true, serverSelectionTimeoutMS: 50000 });
 
 //Get the default connection
 var db = mongoose.connection;
@@ -26,7 +27,7 @@ db.once('open', function () {
 var app = express();
 
 app.use(function(req, res, next){
-  res.setTimeout(3600000, function(){
+  res.setTimeout(360000000, function(){
       console.log('Request has timed out.');
       res.send(408);
       });
@@ -47,6 +48,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/backup', backupRouter);
 app.use('/lista', listaRouter);
 app.use('/bagit', bagitRouter);
+app.use('/import', importRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

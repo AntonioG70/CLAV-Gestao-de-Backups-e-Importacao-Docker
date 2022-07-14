@@ -24,25 +24,13 @@
         </div>
         <div class="col-md-3">
           <div class="form-area">
-            <label style="font-size: 1.5em;letter-spacing: 0.5px;font-weight: bold;">Escolha o tipo de autenticação que pretende:</label>
+            <label style="font-size: 1.5em;letter-spacing: 0.5px;font-weight: bold;">Backup de informação</label>
             <div class="check mt-3">
-              <label class="label" for="Apikey">Apikey</label>
-              <input style="margin-left: 5px; margin-bottom: 5px" type="radio" class="input-radio" @click="showApk = true; showLogin = false; getListaApiKey()" required v-model="tipoAut" value="apikey">
-              <label class="label" for="Login">Login</label>
-              <input style="margin-left: 5px; margin-bottom: 5px" type="radio"  class="input-radio" @click="showLogin = true; showApk = false; getLista()" required v-model="tipoAut" value="login">
-            </div>
-            <div style="margin-top: 20px" v-if="showApk">
-              <label class="label">Insira a apikey</label>
-              <input type="text" class="input" v-model="apikey" @click="noAPK = false" @input="noAPK = false">
-            </div>
-            <div style="margin-top: 20px" v-if="showLogin">
-              <label class="label">Username</label>
-              <input type="text" class="input" v-model="login.username" @click="noUser = false" @input="noUser = false">
-              <label class="label mt-3">Password</label>
-              <input type="password" class="input" v-model="login.password" @click="noPass = false" @input="noPass = false">
+              <label class="label" for="Apikey">Selecionar tudo</label>
+              <input style="margin-left: 5px; margin-bottom: 5px" type="checkbox" class="input-radio" @click="all=!all; alteraLista()">
             </div>
             <div>
-              <v-btn style="margin-top: 30px; background-color: #2d364e; color: white" @click="start" :loading="loading" :disabled="tipoAut == ''">Submeter</v-btn>
+              <v-btn style="margin-top: 30px; background-color: #2d364e; color: white" @click="start" :loading="loading">Submeter</v-btn>
             </div>
             <div style="width: 50%" class="mt-14">
             <v-card
@@ -51,8 +39,8 @@
               <v-card-title class="text-h5">
                 Informação de Utilização
               </v-card-title>
-              <v-card-subtitle>Preencha a área de autenticação, escolha a diretoria e arraste a informação que pretende 
-                fazer backup para a caixa "Informação para Backup".</v-card-subtitle>
+              <v-card-subtitle>Arraste a informação que pretende 
+                fazer backup para a caixa "Informação para Backup" e prima "Submeter".</v-card-subtitle>
             </v-card>
             </div>     
           </div>  
@@ -134,8 +122,7 @@ export default {
   },
   data() {
     return {
-      tipoAut: "",
-      apikey: "",
+      all: false,
       login: {
         username: "",
         password: ""
@@ -159,8 +146,29 @@ export default {
         this.listaBackup = []
       })
       .catch(err => console.log(err))
+    if($cookies.isKey('token')){
+      axios.get('/api/lista/')
+        .then(dados => {
+          this.lista = dados.data
+          this.listaBackup = []
+        })
+        .catch(err => console.log(err))
+    }
+    else if($cookies.isKey('apikey')){
+      this.getListaApiKey()
+    }      
   },
   methods: {
+    alteraLista(){
+      if(this.all){
+        this.listaBackup = this.lista
+        this.lista = []
+      }
+      else{
+        this.lista = this.listaBackup
+        this.listaBackup = []
+      }
+    },
     getListaApiKey(){
       this.lista = []
       axios.get('/api/lista/apikey')  
@@ -215,20 +223,18 @@ export default {
       this.listaBackup.forEach(l => {
         listaSub.push(l)
       })
-      console.log(listaSub)
       if(listaSub.length == 0){
         this.loading = false
         this.dialogListaVazia = true
       }
       else {
-        if(this.tipoAut == 'login'){
+        if($cookies.isKey('token')){
           axios({
           method: 'post',
-          url: "/api/backup", 
+          url: "/api/backup?token=" + $cookies.get("token"), 
           data: {
-            username: this.login.username,
-            password: this.login.password,
-            col: listaSub,
+            username: $cookies.get("nome"),
+            col: listaSub
           }
           })
           .then(dados => {
@@ -248,13 +254,12 @@ export default {
             this.loading = false
           })
         }
-        else if(this.tipoAut == 'apikey'){
+        else if($cookies.isKey('apikey')){
           axios({
           method: 'post',
-          url: "/api/backup", 
+          url: "/api/backup?apikey=" + $cookies.get('apikey'), 
           data: {
-            apikey: this.apikey,
-            col: listaSub,
+            col: listaSub
           }
           })
           .then(dados => {

@@ -9,14 +9,24 @@ async function writeFile(c, dados, token, flag, path){
   if(flag){
     for(const pgd of dados.data){
       num++
+      let numero = pgd.numero.split('/')[0]
+      let fileName = 'TS_PGD_' + numero
+      pgd.entidades.forEach(element => {
+        if(element.split('#ent_')[1]){
+          fileName = fileName + '_' + element.split('#ent_')[1]
+        }
+        else if(element.split('#tip_')[1]){
+          fileName = fileName + '_' + element.split('#tip_')[1]
+        }
+      });
       let pgdID = pgd.idPGD
       await axios.get('http://clav-api.di.uminho.pt/v2/pgd/' + pgdID + '?apikey=' + token)
         .then(async p => {
           let data = JSON.stringify(p.data, null, 2)
           console.log("written")
-          fs.appendFileSync(path + '/data/' + c + '/' + pgdID + '.json', data)
-          let sum = ops.calcCheckSum(path + '/data/' + c + '/' + pgdID + '.json')
-          fs.appendFileSync(path + "/manifest-sha256.txt", sum + " data/pgd/" + pgdID + '.json\n')
+          fs.appendFileSync(path + '/data/' + c + '/' + fileName + '.json', data)
+          let sum = ops.calcCheckSum(path + '/data/' + c + '/' + fileName + '.json')
+          fs.appendFileSync(path + "/manifest-sha256.txt", sum + " data/pgd/" + fileName + '.json\n')
         })
         .catch(err => console.log(err))
     }
@@ -25,14 +35,24 @@ async function writeFile(c, dados, token, flag, path){
   else{
     for(const pgd of dados.data){
       num++
+      let numero = pgd.numero.split('/')[0]
+      let fileName = 'TS_PGD_' + numero
+      pgd.entidades.forEach(element => {
+        if(element.split('#ent_')[1]){
+          fileName = fileName + '_' + element.split('#ent_')[1]
+        }
+        else if(element.split('#tip_')[1]){
+          fileName = fileName + '_' + element.split('#tip_')[1]
+        }
+      });    
       let pgdID = pgd.idPGD
       await axios.get('http://clav-api.di.uminho.pt/v2/pgd/' + pgdID + '?token=' + token)
         .then(async p => {
           let data = JSON.stringify(p.data, null, 2)
           console.log("written")
-          fs.appendFileSync(path + '/data/' + c + '/' + pgdID + '.json', data)
-          let sum = ops.calcCheckSum(path + '/data/' + c + '/' + pgdID + '.json')
-          fs.appendFileSync(path + "/manifest-sha256.txt", sum + " data/pgd/" + pgdID + '.json\n')
+          fs.appendFileSync(path + '/data/' + c + '/' + fileName + '.json', data)
+          let sum = ops.calcCheckSum(path + '/data/' + c + '/' + fileName + '.json')
+          fs.appendFileSync(path + "/manifest-sha256.txt", sum + " data/pgd/" + fileName + '.json\n')
         })
         .catch(err => console.log(err))
     }

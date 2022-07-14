@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var lista = require('../controllers/verify')
+var axios = require('axios')
 
 router.get('/', function(req, res){
   var newLista = lista.getLista()
@@ -11,7 +12,5 @@ router.get('/apikey', function(req, res){
   var newLista = lista.getListaKey()
   res.send(newLista)
 })
-
-
 
 module.exports = router;
