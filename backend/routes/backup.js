@@ -277,7 +277,7 @@ router.post('/', async function(req, res){
   
           var bag = {
             nome: nome,
-            criador: req.body.username,
+            criador: user.data.name,
             data_criacao: data,
             tamanho: size,
             ficheiros: req.body.col
